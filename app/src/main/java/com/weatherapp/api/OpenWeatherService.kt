@@ -6,6 +6,12 @@ import retrofit2.http.Query
 
 interface OpenWeatherService {
 
+    @GET("data/2.5/weather")
+    suspend fun getCurrentWeather(
+        @Query("q") query: String = "Bangalore",
+        @Query("units") units: String = "metric"
+    ): Response<WeatherNow>
+
     @GET("data/2.5/forecast")
     suspend fun getWeatherForecast(@Query("q") query: String = "Bangalore")
             : Response<Forecast>

@@ -1,9 +1,6 @@
 package com.weatherapp
 
 import com.google.common.truth.Truth
-import com.weatherapp.AppRepository
-import com.weatherapp.InstantExecutorExtension
-import com.weatherapp.MainViewModel
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
@@ -19,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(InstantExecutorExtension::class)
 class MainViewModelTest {
     private val appRepository = mockk<AppRepository>()
-    private val forecastViewModel = MainViewModel(appRepository)
+    private val mainViewModel = MainViewModel(appRepository)
 
     private val testDispatcher = TestCoroutineDispatcher()
 
@@ -30,33 +27,45 @@ class MainViewModelTest {
 
     @Test
     fun `init no observer`() = runBlockingTest {
-        Truth.assertThat(forecastViewModel.forecasts).isNotNull()
+        Truth.assertThat(mainViewModel.forecasts).isNotNull()
+        Truth.assertThat(mainViewModel.currentWeather).isNotNull()
         coVerify { appRepository.fetchWeatherForecastData(any()) wasNot Called }
-        forecastViewModel.setCity("B")
+        coVerify { appRepository.fetchCurrentWeatherData(any()) wasNot Called }
+
+        mainViewModel.setCity("B")
         coVerify { appRepository.fetchWeatherForecastData(any()) wasNot Called}
+        coVerify { appRepository.fetchCurrentWeatherData(any()) wasNot Called}
     }
 
     @Test
     fun `basic call`() = runBlockingTest {
-        forecastViewModel.forecasts.observeForever(mockk())
+        mainViewModel.forecasts.observeForever(mockk())
+        mainViewModel.currentWeather.observeForever(mockk())
         coEvery { appRepository.fetchWeatherForecastData(any()) } returns flowOf()
+        coEvery { appRepository.fetchCurrentWeatherData(any()) } returns flowOf()
 
-        forecastViewModel.setCity("Bangalore")
+        mainViewModel.setCity("Bangalore")
         coVerify { appRepository.fetchWeatherForecastData("Bangalore") }
+        coVerify { appRepository.fetchCurrentWeatherData("Bangalore") }
 
-        forecastViewModel.setCity("London")
+        mainViewModel.setCity("London")
         coVerify { appRepository.fetchWeatherForecastData("London") }
+        coVerify { appRepository.fetchCurrentWeatherData("London") }
     }
 
     @Test
     fun `retry`() = runBlockingTest {
-        forecastViewModel.forecasts.observeForever(mockk())
+        mainViewModel.forecasts.observeForever(mockk())
+        mainViewModel.currentWeather.observeForever(mockk())
         coEvery { appRepository.fetchWeatherForecastData("Bangalore") } returns flowOf()
+        coEvery { appRepository.fetchCurrentWeatherData("Bangalore") } returns flowOf()
 
-        forecastViewModel.setCity("Bangalore")
+        mainViewModel.setCity("Bangalore")
         coVerify { appRepository.fetchWeatherForecastData("Bangalore") }
+        coVerify { appRepository.fetchCurrentWeatherData("Bangalore") }
 
-        forecastViewModel.retry()
+        mainViewModel.retry()
         coVerify { appRepository.fetchWeatherForecastData("Bangalore") }
+        coVerify { appRepository.fetchCurrentWeatherData("Bangalore") }
     }
 }

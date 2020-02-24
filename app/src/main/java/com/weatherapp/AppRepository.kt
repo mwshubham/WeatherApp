@@ -10,6 +10,22 @@ import javax.inject.Singleton
 @Singleton
 class AppRepository @Inject constructor(private val openWeatherService: OpenWeatherService) {
 
+    suspend fun fetchCurrentWeatherData(city: String = "Bangalore", units: String = "metric")
+            : Flow<Resource<WeatherNow>> = flow {
+        emit(Resource.loading(null))
+
+        emit(
+            processResponse(
+                safeApiCall(
+                    call = {
+                        ApiResponse.create(openWeatherService.getCurrentWeather(city, units))
+                    },
+                    errorMessage = "Error fetching weather data"
+                )
+            )
+        )
+    }
+
     suspend fun fetchWeatherForecastData(city: String = "Bangalore"): Flow<Resource<Forecast>> = flow {
         emit(Resource.loading(null))
 
@@ -25,7 +41,7 @@ class AppRepository @Inject constructor(private val openWeatherService: OpenWeat
         )
     }
 
-    private fun processResponse(apiResponse: ApiResponse<Forecast>): Resource<Forecast> {
+    private fun <T> processResponse(apiResponse: ApiResponse<T>): Resource<T> {
         return when (apiResponse) {
             is ApiEmptyResponse -> {
                 Resource.error("Empty response", null)

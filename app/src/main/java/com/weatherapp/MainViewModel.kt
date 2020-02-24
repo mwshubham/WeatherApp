@@ -2,6 +2,7 @@ package com.weatherapp
 
 import androidx.lifecycle.*
 import com.weatherapp.api.Forecast
+import com.weatherapp.api.WeatherNow
 import com.weatherapp.util.Event
 import com.weatherapp.vo.Resource
 import kotlinx.coroutines.flow.collect
@@ -15,6 +16,14 @@ class MainViewModel @Inject constructor(private val appRepository: AppRepository
     val forecasts: LiveData<Event<Resource<Forecast>>> = Transformations.switchMap(_city) {
         liveData {
             appRepository.fetchWeatherForecastData(it).collect {
+                emit(Event(it))
+            }
+        }
+    }
+
+    val currentWeather: LiveData<Event<Resource<WeatherNow>>> = Transformations.switchMap(_city) {
+        liveData {
+            appRepository.fetchCurrentWeatherData(it).collect {
                 emit(Event(it))
             }
         }
