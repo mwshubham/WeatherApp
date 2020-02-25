@@ -15,6 +15,11 @@
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior" />
 
         <include
+            android:id="@+id/error_view"
+            layout="@layout/error_view"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior" />
+
+        <include
             android:id="@+id/forecast"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -1,6 +1,8 @@
 package com.weatherapp
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.weatherapp.databinding.ActivityMainBinding
 import javax.inject.Inject
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -50,6 +53,12 @@ class MainActivity : AppCompatActivity() {
                         }
                     }.onError { _, _ ->
                         binding.contentMain.refresh.isRefreshing = false
+
+                        ObjectAnimator.ofFloat(binding.errorView.errorRootView,
+                            "translationX", 0f).apply {
+                            duration = 300
+                            start()
+                        }
                     }
 
                 getContentIfNotHandled()?.let {
@@ -79,6 +88,16 @@ class MainActivity : AppCompatActivity() {
             mainViewModel.retry()
         }
 
+        binding.errorView.retry.setOnClickListener {
+            mainViewModel.retry()
+
+            ObjectAnimator.ofFloat(binding.errorView.errorRootView,
+                "translationX", convertDpToPixel(800f)).apply {
+                duration = 250
+                start()
+            }
+        }
+
         mainViewModel.setCity("Bangalore")
     }
 
@@ -89,5 +108,9 @@ class MainActivity : AppCompatActivity() {
 
         forecastAdapter = ForecastAdapter()
         recyclerView.adapter = forecastAdapter
+    }
+
+    private fun convertDpToPixel(dp: Float): Float {
+        return dp * (resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
     }
 }
