@@ -2,9 +2,7 @@ package com.weatherapp
 
 import com.google.common.truth.Truth
 import com.squareup.moshi.Moshi
-import com.weatherapp.api.Forecast
-import com.weatherapp.api.OpenWeatherService
-import com.weatherapp.api.WeatherNow
+import com.weatherapp.api.*
 import com.weatherapp.vo.Status
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
@@ -39,12 +37,13 @@ class AppRepositoryTest {
             coEvery { openWeatherService.getWeatherForecast() } returns Response.success(
                 successResponse
             )
+            val repoResponse = successResponse?.toForecastUi()
 
             val result = repository.fetchWeatherForecastData().take(2).toList()
 
             Truth.assertThat(result[0].status).isEqualTo(Status.LOADING)
             Truth.assertThat(result[1].status).isEqualTo(Status.SUCCESS)
-            Truth.assertThat(result[1].data).isEqualTo(successResponse)
+            Truth.assertThat(result[1].data).isEqualTo(repoResponse)
         }
 
         @Test
@@ -97,12 +96,13 @@ class AppRepositoryTest {
             coEvery { openWeatherService.getCurrentWeather() } returns Response.success(
                 successResponse
             )
+            val repoResponse = successResponse?.toWeatherUi()
 
             val result = repository.fetchCurrentWeatherData().take(2).toList()
 
             Truth.assertThat(result[0].status).isEqualTo(Status.LOADING)
             Truth.assertThat(result[1].status).isEqualTo(Status.SUCCESS)
-            Truth.assertThat(result[1].data).isEqualTo(successResponse)
+            Truth.assertThat(result[1].data).isEqualTo(repoResponse)
         }
 
         @Test

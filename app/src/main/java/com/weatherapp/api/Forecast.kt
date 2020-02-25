@@ -1,8 +1,8 @@
 package com.weatherapp.api
 
-import com.squareup.moshi.JsonClass
-
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
+import com.weatherapp.vo.ForecastUi
 
 
 @JsonClass(generateAdapter = true)
@@ -116,3 +116,13 @@ data class Wind(
     @Json(name = "speed")
     val speed: Double
 )
+
+fun Forecast.toForecastUi(): List<ForecastUi> {
+    return list.map {
+        ForecastUi(
+            forecastDate = it.dtTxt,
+            forecastTemp = it.main.temp.toString(),
+            forecastWeather = it.weather[0].main
+        )
+    }
+}

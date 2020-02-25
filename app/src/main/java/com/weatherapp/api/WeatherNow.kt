@@ -1,7 +1,9 @@
 package com.weatherapp.api
+
 import com.squareup.moshi.JsonClass
 
 import com.squareup.moshi.Json
+import com.weatherapp.vo.WeatherUi
 
 
 @JsonClass(generateAdapter = true)
@@ -96,4 +98,9 @@ data class CurrentWind(
     val deg: Int,
     @Json(name = "speed")
     val speed: Double
+)
+
+fun WeatherNow.toWeatherUi() = WeatherUi(
+    currentTemp = currentMain.temp.toString(),
+    currentWeather = currentWeather[0].main
 )
