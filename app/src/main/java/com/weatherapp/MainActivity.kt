@@ -1,14 +1,15 @@
 package com.weatherapp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.weatherapp.databinding.ActivityMainBinding
-import com.weatherapp.vo.Status
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -18,12 +19,16 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var forecastAdapter: ForecastAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as WeatherApp).appComponent.inject(this)
 
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+
+        setupRecyclerView()
 
         mainViewModel = ViewModelProvider(this, viewmodelFactory)[MainViewModel::class.java]
         mainViewModel.currentWeather.observe(this, Observer {result ->
@@ -55,10 +60,34 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        mainViewModel.forecasts.observe(this, Observer { result ->
+            result.run {
+                peekContent()
+                    .onSuccess {
+                        forecastAdapter.submitList(it)
+                    }
+
+                getContentIfNotHandled()?.let {
+                    it.onError { msg, _ ->
+                        Toast.makeText(this@MainActivity, msg, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        })
+
         binding.contentMain.refresh.setOnRefreshListener {
             mainViewModel.retry()
         }
 
         mainViewModel.setCity("Bangalore")
+    }
+
+    private fun setupRecyclerView() {
+        recyclerView = binding.forecast.forecasts
+        recyclerView.layoutManager = LinearLayoutManager(this,
+            LinearLayoutManager.HORIZONTAL, false)
+
+        forecastAdapter = ForecastAdapter()
+        recyclerView.adapter = forecastAdapter
     }
 }

@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="item"
+            type="com.weatherapp.vo.ForecastUi" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -26,6 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="8dp"
+                android:text="@{item.forecastDate}"
                 tools:text="2020-02-29 09:00:00" />
 
             <TextView
@@ -34,6 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="8dp"
+                android:text="@{item.forecastTemp}"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 tools:text="21.93°C" />

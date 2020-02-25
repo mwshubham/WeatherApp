@@ -9,6 +9,7 @@
         android:orientation="vertical">
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/forecasts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:listitem="@layout/forecast_row_item"
