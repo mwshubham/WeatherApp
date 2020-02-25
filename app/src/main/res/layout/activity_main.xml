@@ -3,24 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-    </data>
-
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
         tools:context=".MainActivity">
-
-        <com.google.android.material.appbar.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <com.google.android.material.appbar.MaterialToolbar
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </com.google.android.material.appbar.AppBarLayout>
 
         <include
             android:id="@+id/content_main"
@@ -29,9 +16,11 @@
 
         <include
             android:id="@+id/forecast"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             layout="@layout/bottom_sheet_forecast"
             app:behavior_hideable="false"
-            app:behavior_peekHeight="100dp"
+            app:behavior_peekHeight="96dp"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
