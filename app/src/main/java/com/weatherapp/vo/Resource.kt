@@ -20,4 +20,25 @@ data class Resource<out T>(val status: Status, val data: T?, val message: String
             return Resource(LOADING, data, null)
         }
     }
+
+    fun onSuccess(onSuccess: (data: T?) -> Unit): Resource<T> {
+        if (this.status == SUCCESS)
+            onSuccess(this.data)
+
+        return this
+    }
+
+    fun onLoading(onLoading: (data: T?) -> Unit): Resource<T> {
+        if (this.status == LOADING)
+            onLoading(this.data)
+
+        return this
+    }
+
+    fun onError(onError: (msg: String?, data: T?) -> Unit): Resource<T> {
+        if (this.status == ERROR)
+            onError(this.message, data)
+
+        return this
+    }
 }
