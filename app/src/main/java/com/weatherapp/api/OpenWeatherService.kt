@@ -12,7 +12,7 @@ interface OpenWeatherService {
         @Query("units") units: String = "metric"
     ): Response<WeatherNow>
 
-    @GET("data/2.5/forecast")
+    @GET("data/2.5/forecast?units=metric")
     suspend fun getWeatherForecast(@Query("q") query: String = "Bangalore")
             : Response<Forecast>
 }

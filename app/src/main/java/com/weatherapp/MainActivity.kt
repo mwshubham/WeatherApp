@@ -3,6 +3,7 @@ package com.weatherapp
 import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -10,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.squareup.picasso.Picasso
 import com.weatherapp.databinding.ActivityMainBinding
 import javax.inject.Inject
@@ -24,6 +26,24 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mainViewModel: MainViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var forecastAdapter: ForecastAdapter
+
+    private val bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(
+            bottomSheet: View,
+            newState: Int
+        ) {
+
+        }
+
+        override fun onSlide(
+            bottomSheet: View,
+            slideOffset: Float
+        ) {
+            binding.contentMain.currentTemp.alpha = 1 - slideOffset
+            binding.contentMain.tempIcon.alpha = 1 - slideOffset
+            binding.contentMain.refresh.alpha = 1.8f - slideOffset
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as WeatherApp).appComponent.inject(this)
@@ -42,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                     }.onSuccess {
                         binding.contentMain.refresh.isRefreshing = false
                         peekContent().data?.run {
-                            binding.contentMain.currentTemp.text = currentTemp
+                            binding.contentMain.currentTemp.text = String.format(getString(R.string.temp_format), currentTemp)
 
                             when(currentWeather) {
                                 "Clear" -> Picasso.get().load(R.drawable.clear).fit().into(binding.contentMain.tempIcon)
@@ -99,6 +119,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         mainViewModel.setCity("Bangalore")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val bottomSheetBehavior = BottomSheetBehavior.from(binding.forecast.root)
+        bottomSheetBehavior.addBottomSheetCallback(bottomSheetCallback)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        val bottomSheetBehavior = BottomSheetBehavior.from(binding.forecast.root)
+        bottomSheetBehavior.removeBottomSheetCallback(bottomSheetCallback)
     }
 
     private fun setupRecyclerView() {

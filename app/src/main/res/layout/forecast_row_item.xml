@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="8dp"
-                android:text="@{item.forecastTemp}"
+                android:text="@{@string/temp_format(item.forecastTemp)}"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 tools:text="21.93°C" />
